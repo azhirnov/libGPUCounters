@@ -75,7 +75,7 @@ struct counter_sample {
 
     /** Default constructor */
     counter_sample()
-        : counter_sample(hwcpipe_counter(), 0, 0UL) {}
+        : counter_sample(hwcpipe_counter(), uint64_t{0}, uint64_t{0}) {}
 };
 
 /**
@@ -580,8 +580,10 @@ class sampler : private detail::expression::context {
 
     HWCP_NODISCARD double get_counter_value(hwcpipe_counter counter) const override {
         auto it = counter_to_buffer_pos_.find(counter);
-        assert(it != counter_to_buffer_pos_.end());
-        return static_cast<double>(get_hardware_counter_value(it));
+        if (it != counter_to_buffer_pos_.end())
+			return static_cast<double>(get_hardware_counter_value(it));
+		else
+			return 0.0;
     }
 
     HWCP_NODISCARD double get_mali_config_ext_bus_byte_size() const override {
